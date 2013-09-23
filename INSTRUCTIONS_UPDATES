@@ -1,0 +1,12 @@
+
+Main Objective : Using steering behaviour to pursuit
+
+1. Add speed ups
+2. Power to repel the police cars
+3. Add more police 
+4. Add banks for thief objectives 
+5. Add game over clause 
+
+Bugs :
+1. Multiple key-strokes only for 2 directions 
+2. For a particular scenario the police car diverges from the thief
