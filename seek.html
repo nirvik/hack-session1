@@ -1,0 +1,169 @@
+<canvas id = "mycanvas" width="1000" height="600"></canvas>
+
+<script src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script>
+	$(document).ready(function(){
+
+		//canvas stuff
+		var canvas = $("#mycanvas")[0];
+		var ctx = canvas.getContext("2d");
+		var w = $("#mycanvas").width();
+		var h = $("#mycanvas").height();
+
+		ctx.fillStyle = "black";
+		ctx.fillRect(0,0,w,h);
+
+		var thief= {} ;
+		var horiz=0;
+		var vert=0;
+
+		var police = {};
+		var desired  = {};
+		var steer = {};
+
+		var d ; //default direction
+
+		var map = {37:false,38:false,39:false,40:false};
+
+		function init(){
+
+			create_thief();
+			create_police();
+			create_police();
+			gameloop = setInterval(pursuit_evade_loop,60); 
+		}
+
+		init();
+
+		function create_thief(){
+			
+			thief.position={x:10,y:10};  //initial position of the thief
+			thief.vel={x:5,y:5}; 
+
+		}
+
+		function create_police(){
+			police.position= {x:Math.random()*2400,y:Math.random()*600};
+			police.vel= {x:0,y:0};
+			
+		}
+
+		function pursuit_evade_loop(){
+		
+			ctx.fillStyle = "black";
+			ctx.fillRect(0,0,w,h);
+
+			//get the position of the thief
+			var nx = thief.position.x;
+			var ny = thief.position.y;
+			var pos = {};
+			nx = nx + (thief.vel.x*horiz)*2.0; //position = position + velocity
+			ny = ny + (thief.vel.y*vert)*2.0;
+			pos.x = nx;
+			pos.y = ny;
+			thief.position = pos;
+
+			
+			//Seek function of our autonomous police car 
+			var future_position = {x:0,y:0};
+			var px;
+			var py;
+
+			px = police.position.x + police.vel.x; //The police keeps patrolling
+			py = police.position.y + police.vel.y;
+			
+			police.position.x = px;
+			police.position.y = py;
+
+
+			// Distance btw police and the thief 
+			var magnitude = Math.sqrt(Math.pow(px - nx,2) + Math.pow(py - ny,2));
+			var T ; 
+			
+
+
+			T = magnitude/10;  //10 is the MAX_VEL 
+			
+			if (magnitude < 50){
+				T =T/2 ; //Quit predicting and start chasing 
+				console.log("Mag less than 100");
+				
+			}
+
+
+			 //Scaling the position after T units
+			 if (nx < 0 )
+			 {
+				future_position.x = nx + (thief.vel.x * T*(-1)); 
+			}
+			else if (nx>0)
+			{
+				future_position.x = nx + (thief.vel.x * T); 
+			}
+			if(ny<0)
+			{
+				future_position.y = ny + (thief.vel.y * T*(-1));
+			}
+			else if(ny>0)
+			{
+				future_position.y = ny + (thief.vel.y * T);
+			}	
+			//Pursuit calculation 
+
+			var distance = Math.sqrt(Math.pow(px - future_position.x,2) + Math.pow(py - future_position.y,2)); //NEW
+
+			desired.x =(future_position.x - px)/distance;  //(pos.x - px)/magnitude; 
+			desired.y =(future_position.y- py)/distance;	//(pos.y- py)/magnitude;
+			
+			desired.x = desired.x * 7; //max vel of police is 10
+			desired.y = desired.y * 7; // max vel of police is 10
+			
+			//The Steering velocity ->
+			steer.x = desired.x - police.vel.x; 
+			steer.y = desired.y - police.vel.y;
+	
+			px = px + police.vel.x + (steer.x)*1.8; // curr_vel + steer_vel = desired_vel 
+			py = py + police.vel.y + (steer.y)*1.8;
+			police.position.x = px ;
+			police.position.y = py;
+			console.log("T " + T);	
+			paint_thief(pos.x,pos.y);
+			paint_police(px,py);
+
+		}
+		function paint_thief(x,y){
+			ctx.fillStyle = "red";
+			ctx.fillRect(x,y,10,10);
+			ctx.strokeStyle = "white";
+			ctx.strokeRect(x,y,10,10);
+		}
+		function paint_police(x,y){
+			ctx.fillStyle = "blue";
+			ctx.fillRect(x,y,10,10);
+			ctx.strokeStyle = "white";
+			ctx.strokeRect(x,y,10,10);
+		}
+
+		
+		
+
+		$(document).keydown(function(e){ 
+			if(e.keyCode in map){
+
+				map[e.keyCode] = true;
+				horiz = map[39] - map[37];
+				vert = map[40] - map[38];
+					
+			}
+		}).keyup(function(e){
+			if (e.keyCode in map) {
+				map[e.keyCode] = false;
+			}
+		});
+
+	});
+
+</script>
+</html>
+
+
