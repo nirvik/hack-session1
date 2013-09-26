@@ -1,8 +1,3 @@
-<canvas id = "mycanvas" width="1000" height="600"></canvas>
-<script>
-	window.onload = function(){
-
-		//canvas stuff
 		var canvas = document.getElementById('mycanvas');
 		var ctx = canvas.getContext("2d");
 		var w = canvas.width;
@@ -34,7 +29,7 @@
 		init();
 
 		function create_thief(){
-			
+
 			thief.position={x:10,y:10};  //initial position of the thief
 			thief.vel={x:5,y:5}; 
 
@@ -43,11 +38,11 @@
 		function create_police(){
 			police.position= {x:1000,y:600};
 			police.vel= {x:0,y:0};
-			
+
 		}
 
 		function pursuit_evade_loop(){
-		
+
 			ctx.fillStyle = "black";
 			ctx.fillRect(0,0,w,h);
 
@@ -64,7 +59,7 @@
 			pos.y = ny;
 			thief.position = pos;
 
-			
+
 			//Seek function of our autonomous police car 
 			var future_position = {x:0,y:0};
 			var px;
@@ -72,7 +67,7 @@
 
 			px = police.position.x + police.vel.x; //The police keeps patrolling
 			py = police.position.y + police.vel.y;
-			
+
 			police.position.x = px;
 			police.position.y = py;
 
@@ -81,14 +76,14 @@
 			// Distance btw police and the thief 
 			var magnitude = Math.sqrt(Math.pow(px - nx,2) + Math.pow(py - ny,2));
 			var T ; 
-			
+
 
 
 			T = (magnitude/10)*1.2;  //10 is the MAX_VEL 
-			
+
 			if (magnitude < 50){
 				T =T/2 ; //Quit predicting and start chasing 
-				
+
 			}
 
 
@@ -115,14 +110,14 @@
 
 			desired.x =(future_position.x - px)/distance;  //(pos.x - px)/magnitude; 
 			desired.y =(future_position.y- py)/distance;	//(pos.y- py)/magnitude;
-			
+
 			desired.x = desired.x * 7; //max vel of police is 10
 			desired.y = desired.y * 7; // max vel of police is 10
-			
+
 			//The Steering velocity ->
 			steer.x = desired.x - police.vel.x; 
 			steer.y = desired.y - police.vel.y;
-	
+
 			px = px + police.vel.x + (steer.x)*1.4; // curr_vel + steer_vel = desired_vel 
 			py = py + police.vel.y + (steer.y)*1.4; // distance = position + velocity
 			police.position.x = px ;
@@ -144,8 +139,8 @@
 			ctx.strokeRect(x,y,10,10);
 		}
 
-		
-		
+
+
 		document.onkeydown = function(e){ 
 			console.log(e.keyCode);
 			map[e.keyCode] = true;
@@ -154,9 +149,4 @@
 			map[e.keyCode] = false;
 		}
 
-	};
-
-</script>
-</html>
-
-
+	
